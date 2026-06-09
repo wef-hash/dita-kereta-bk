@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B-Express - Bimbingan & Konseling Interaktif</title>
+  
+  <!-- CSS Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            display: ['Space Grotesk', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- CDNs for React and Babel -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Custom Scrollbar for ambient look */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #020617;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4f46e5;
+    }
+    
+    /* Animation helper classes */
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.4; }
+    }
+    .ambient-glow {
+      animation: pulse-glow 4s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-indigo-500/30 selection:text-white">
+
+  <!-- Main Root Container for React App -->
+  <div id="root"></div>
+
+  <!-- React Code Transpiled on-the-fly with Babel -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ==========================================
+    // CRITICAL ICON ELEMENT (REPLACES LUCIDE FOR SINGLE FILE RUNTIME)
+    // ==========================================
+    function Icon({ name, className = "w-5 h-5" }) {
+      const icons = {
+        'ticket': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18 8a9 9 0 11-18 0 9 9 0 0118 0zm-5 4H5v2h8v-2zm0 4H5v2h8v-2z" />
+          </svg>
+        ),
+        'train': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 4h14l1 7H4l1-7zm0 13a2 2 0 100-4 2 2 0 000 4zm14 0a2 2 0 100-4 2 2 0 000 4zm-7-8h2v2h-2v-2zm-4 4h12l-1 4H5l-1-4z" />
+          </svg>
+        ),
+        'compass': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8a4 4 0 100 8 4 4 0 000-8zm-9 4a9 9 0 1118 0 9 9 0 01-18 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9l1 3h3l-2.5 1.5L14.5 17 12 15l-2.5 2 1-3.5L8 13.5h3l1-4.5z" />
+          </svg>
+        ),
+        'smile': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        ),
+        'users': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        ),
+        'briefcase': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        ),
+        'sparkles': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+        ),
+        'shield-alert': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        ),
+        'check-circle': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        ),
+        'arrow-right': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        ),
+        'arrow-left': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        ),
+        'book-open': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        ),
+        'heart': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        ),
+        'help-circle': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        ),
+        'layout-dashboard': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+          </svg>
+        ),
+        'refresh-cw': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3m-3 3l-3-3" />
+          </svg>
+        ),
+        'search': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        ),
+        'filter': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 8.293A1 1 0 013 7.586V4z" />
+          </svg>
+        ),
+        'trash-2': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        ),
+        'eye': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        ),
+        'lock': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        ),
+        'database': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+          </svg>
+        ),
+        'award': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364.364l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+        ),
+        'clock': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        ),
+        'map-pin': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        ),
+        'file-spreadsheet': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        ),
+        'volume-2': (
+          <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+        )
+      };
+
+      return icons[name] || (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10" />
+        </svg>
+      );
+    }
+
+    // ==========================================
+    // AUDIO SYNTHESIZER (offline-friendly)
+    // ==========================================
+    const playSuccessChime = () => {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Note 1
+        let osc = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+
+        // Note 2
+        setTimeout(() => {
+          let osc2 = audioCtx.createOscillator();
+          let gain2 = audioCtx.createGain();
+          osc2.connect(gain2);
+          gain2.connect(audioCtx.destination);
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(659.25, audioCtx.currentTime); // E5
+          gain2.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+          osc2.start();
+          osc2.stop(audioCtx.currentTime + 0.45);
+        }, 150);
+
+        // Note 3
+        setTimeout(() => {
+          let osc3 = audioCtx.createOscillator();
+          let gain3 = audioCtx.createGain();
+          osc3.connect(gain3);
+          gain3.connect(audioCtx.destination);
+          osc3.type = 'sine';
+          osc3.frequency.setValueAtTime(783.99, audioCtx.currentTime); // G5
+          gain3.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain3.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+          osc3.start();
+          osc3.stop(audioCtx.currentTime + 0.55);
+        }, 300);
+      } catch (err) {
+        console.log("Audio not supported or blocked: ", err);
+      }
+    };
+
+    const playClickTone = () => {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let osc = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.12);
+      } catch (err) {}
+    };
+
+
+    // ==========================================
+    // TICKET BOOTH COMPONENT
+    // ==========================================
+    function TicketBooth({ onBoard }) {
+      const [name, setName] = useState('');
+      const [error, setError] = useState('');
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!name.trim()) {
+          setError('Masukkan namamu terlebih dahulu untuk mengambil tiket!');
+          return;
+        }
+        setError('');
+        playSuccessChime();
+        const rand = Math.floor(1000 + Math.random() * 9000);
+        onBoard(name.trim(), `BK-TR-${rand}`);
+      };
+
+      return (
+        <div class="max-w-2xl mx-auto bg-slate-900 border border-slate-800/80 rounded-3xl p-8 shadow-2xl relative overflow-hidden" id="ticket-booth-panel">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div class="text-center mb-8 relative">
+            <div class="inline-flex items-center gap-2 bg-slate-850 border border-slate-700 font-mono text-[11px] font-bold text-amber-400 px-3 py-1.5 rounded-full uppercase tracking-widest shadow-md mb-4">
+              <Icon name="train" className="w-3.5 h-3.5" /> Platform 9 &frac34; BK Kehidupan
+            </div>
+            <h1 class="text-4xl font-extrabold tracking-tight text-white mb-2 font-display">
+              Selamat Datang di <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-indigo-400 font-mono">B-Express</span>
+            </h1>
+            <span class="text-indigo-400 font-bold tracking-widest text-[11px] font-mono block mb-2 uppercase">
+              ★ GERBONG BK EXPERT (B EXPRT) ★
+            </span>
+            <p class="text-slate-400 text-sm max-w-md mx-auto leading-relaxed mt-2 font-sans">
+              Platform Bimbingan & Konseling interaktif berbasis petualangan kereta api. Kenali potensi diri, kelola emosi, dan rancang masa depan bersama Counselor AI!
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div class="bg-slate-850/40 border border-slate-800 rounded-2xl p-4 text-center">
+              <div class="p-2.5 bg-amber-500/10 text-amber-400 w-fit mx-auto rounded-xl border border-amber-500/20 mb-3">
+                <Icon name="book-open" className="w-5 h-5 text-amber-400" />
+              </div>
+              <h4 class="text-xs font-bold text-slate-200 mb-1">Mengenal Potensi</h4>
+              <p class="text-[10px] text-slate-400 leading-normal">Kuis minat bakat dan kecocokan jurusan belajarmu.</p>
+            </div>
+            
+            <div class="bg-slate-850/40 border border-slate-800 rounded-2xl p-4 text-center">
+              <div class="p-2.5 bg-emerald-500/10 text-emerald-400 w-fit mx-auto rounded-xl border border-emerald-500/20 mb-3">
+                <Icon name="heart" className="w-5 h-5 text-emerald-400" />
+              </div>
+              <h4 class="text-xs font-bold text-slate-200 mb-1">Peduli Emosi</h4>
+              <p class="text-[10px] text-slate-400 leading-normal">Catat suasana hati dan tumpahkan perasaan di ruang aman.</p>
+            </div>
+
+            <div class="bg-slate-850/40 border border-slate-800 rounded-2xl p-4 text-center">
+              <div class="p-2.5 bg-indigo-500/10 text-indigo-400 w-fit mx-auto rounded-xl border border-indigo-500/20 mb-3">
+                <Icon name="help-circle" className="w-5 h-5 text-indigo-400" />
+              </div>
+              <h4 class="text-xs font-bold text-slate-200 mb-1">Pelukan Sosial</h4>
+              <p class="text-[10px] text-slate-400 leading-normal">Pahami arti pertemanan sehat dan bangun aksi tolak perundungan.</p>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} class="bg-slate-950 border border-slate-850 p-6 rounded-2xl relative shadow-inner">
+            <div class="flex items-center gap-2 mb-4">
+              <Icon name="ticket" className="w-5 h-5 text-amber-400" />
+              <h3 class="text-sm font-bold text-slate-300">Ambil Tiket Keberangkatan</h3>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-slate-400 text-xs font-medium mb-1.5">
+                  Siapakah namamu? (Siswa / Konseli)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Masukkan nama lengkap / panggilan..."
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (error) setError('');
+                  }}
+                  class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition font-sans"
+                  maxLength={40}
+                />
+                {error && (
+                  <p class="text-red-500 text-xs mt-1.5 font-medium animate-pulse">
+                    {error}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-indigo-600 hover:opacity-95 text-slate-950 hover:text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg transition text-xs font-display uppercase tracking-wider"
+              >
+                Mulai Perjalanan Kereta Kehidupan
+                <Icon name="arrow-right" class="w-4 h-4 text-slate-950 font-bold" />
+              </button>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-slate-800 text-center">
+              <p class="text-[10px] text-slate-500">
+                *Setiap stasiun akan memberikan cap stempel pada tiketmu. Kumpulkan kelima stempel untuk meraih ulasan dan piagam kelulusan dari Guru BK AI!
+              </p>
+            </div>
+          </form>
+        </div>
+      );
+    }
+
+
+    // ==========================================
+    // TRAIN MAP COMPONENT
+    // ==========================================
+    function TrainMap({ currentStation, stamps, onSelectStation, ticketId, userName }) {
+      const stations = [
+        { id: 1, name: 'Kenali Dirimu', icon: 'compass', text: 'Minat & Bakat' },
+        { id: 2, name: 'Kelola Emosi', icon: 'smile', text: 'Mood & Jurnal' },
+        { id: 3, name: 'Hubungan Sosial', icon: 'users', text: 'Anti-Bully' },
+        { id: 4, name: 'Karier', icon: 'briefcase', text: 'Jurusan & Info' },
+        { id: 5, name: 'Masa Depan', icon: 'sparkles', text: 'Plan & Sasaran' },
+      ];
+
+      const completedCount = Object.values(stamps).filter(Boolean).length;
+      const progressPercent = Math.round((completedCount / 5) * 100);
+
+      const handleNodeClick = (id) => {
+        playClickTone();
+        onSelectStation(id);
+      };
+
+      return (
+        <div class="w-full bg-slate-900 border border-slate-800 text-slate-100 rounded-3xl p-6 shadow-xl relative overflow-hidden mb-6" id="train-navigation-map">
+          <div class="absolute inset-0 bg-indigo-950/20 pointer-events-none" />
+          
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800 pb-4 mb-6 gap-3 z-10 relative">
+            <div class="flex items-center gap-3">
+              <div class="bg-amber-500/20 text-amber-400 p-2 rounded-xl border border-amber-500/30">
+                <Icon name="ticket" className="w-6 h-6 text-amber-400" />
+              </div>
+              <div>
+                <h2 class="text-xs font-bold tracking-wider text-slate-400 uppercase font-mono">Tiket Perjalanan Kehidupan</h2>
+                <p class="text-xl font-extrabold text-white flex items-center gap-1 font-display">
+                  {userName} <span class="text-amber-400 font-mono text-sm ml-1">#{ticketId}</span>
+                </p>
+              </div>
+            </div>
+            
+            <div class="bg-slate-850 border border-slate-700/80 px-4 py-2 rounded-2xl flex items-center gap-3 text-xs">
+              <div class="text-right">
+                <p class="font-bold text-slate-300">Stempel Terkumpul</p>
+                <p class="text-slate-400 text-[10px]">Stasiun terselesaikan</p>
+              </div>
+              <div class="text-right font-mono font-bold text-lg text-emerald-400">
+                {progressPercent}%
+              </div>
+            </div>
+          </div>
+
+          <div class="relative py-8 z-10">
+            {/* Track Line */}
+            <div class="absolute top-[24px] left-[10%] right-[10%] h-[4px] bg-slate-800 rounded-full hidden md:block">
+              <div 
+                class="h-full bg-gradient-to-r from-amber-500 via-emerald-500 to-indigo-500 rounded-full transition-all duration-700 ease-out"
+                style={{ width: `${Math.max(0, ((currentStation - 1) / 4) * 100)}%` }}
+              />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-4 relative">
+              {stations.map((sta) => {
+                const isCurrent = currentStation === sta.id;
+                const isCompleted = stamps[sta.id];
+                
+                return (
+                  <div 
+                    key={sta.id} 
+                    class="flex flex-row md:flex-col items-center gap-4 md:gap-2 text-left md:text-center group relative cursor-pointer"
+                    onClick={() => handleNodeClick(sta.id)}
+                  >
+                    <div class="relative z-20">
+                      <button
+                        type="button"
+                        class={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all shadow-md ${
+                          isCurrent 
+                            ? 'bg-slate-105 text-slate-950 bg-white border-white ring-4 ring-indigo-500/30' 
+                            : isCompleted
+                            ? 'bg-emerald-500 text-white border-emerald-400'
+                            : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300 hover:border-slate-600'
+                        }`}
+                      >
+                        <Icon name={sta.icon} className="w-5 h-5 mx-auto" />
+                      </button>
+
+                      {isCompleted && (
+                        <span class="absolute -top-1 -right-1 bg-amber-500 text-slate-900 rounded-full p-0.5 border border-white flex items-center justify-center">
+                          <Icon name="check-circle" className="w-2.5 h-2.5 text-slate-950 font-bold" />
+                        </span>
+                      )}
+                    </div>
+
+                    <div class="flex-1 md:flex-initial">
+                      <p class="text-[9px] uppercase font-mono tracking-wider text-slate-500 group-hover:text-amber-400 transition font-bold leading-none">
+                        Stasiun {sta.id}
+                      </p>
+                      <h3 class={`text-xs font-bold transition mt-0.5 ${isCurrent ? 'text-indigo-400' : 'text-slate-200'}`}>
+                        {sta.name}
+                      </h3>
+                      <p class="text-[10px] text-slate-400 font-medium font-sans">
+                        {sta.text}
+                      </p>
+                    </div>
+
+                    {isCurrent && (
+                      <div class="absolute -top-6 left-1/2 -ml-6 bg-amber-500 text-slate-950 font-bold font-mono text-[9px] px-2 py-0.5 rounded-full shadow-lg hidden md:flex items-center gap-1 border border-amber-350 animate-bounce">
+                        <span class="w-1.5 h-1.5 bg-red-600 rounded-full animate-ping" />
+                        DISINI
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+
+    // ==========================================
+    // STATION 1 (KENALI DIRIMU)
+    // ==========================================
+    function StationOne({ progress, onUpdate }) {
+      const [stage, setStage] = useState('intro'); // intro, quiz1, quiz2, result
+      const [answers, setAnswers] = useState({});
+      const [questionIdx, setQuestionIdx] = useState(0);
+
+      // Quiz 1: RIASEC questions
+      const riasecQuestions = [
+        { id: 1, text: "Saya suka merakit laptop, memperbaiki kabel, atau mengulik barang elektro.", category: "Realistic" },
+        { id: 2, text: "Saya penasaran meneliti kandungan zat, memecahkan teka-teki logika, atau menganalisis data.", category: "Investigative" },
+        { id: 3, text: "Saya senang melukis, menulis cerpen, mengedit video, atau mendesain grafis.", category: "Artistic" },
+        { id: 4, text: "Saya menikmati menolong kawan curhat, mengajar adik kelas, atau menjadi relawan sosial.", category: "Social" },
+        { id: 5, text: "Saya suka berdagang, menawarkan barang, dan memimpin diskusi koordinasi tim panitia.", category: "Enterprising" },
+        { id: 6, text: "Saya menyukai tugas menata kearsipan data, membuat rincian anggaran bulanan secara rapi.", category: "Conventional" },
+      ];
+
+      // Quiz 2: Aptitude questions (Analis, Kreatif, Sosial, Praktis)
+      const aptitudeQuestions = [
+        { id: 1, text: "Menurutmu, cara terbaik menyelesaikan tugas sulit adalah:", options: [
+          { text: "Membagi masalah jadi langkah keci, menganalisis jalannya data secara logis", trait: "Analis/Sistematis" },
+          { text: "Menjelajah ide kreatif di luar kebiasaan, merancang gagasan unik baru", trait: "Kreatif/Inovatif" },
+          { text: "Mengajak kolaborasi kelompok, berdiskusi dan berbagi tugas bersama", trait: "Sosial/Interpersonal" },
+          { text: "Lakukan langsung prakteknya, fokus eksekusi nyata secepat mungkin", trait: "Praktis/Eksekutor" }
+        ]}
+      ];
+
+      const startQuiz = () => {
+        playClickTone();
+        setStage('quiz1');
+        setAnswers({});
+        setQuestionIdx(0);
+      };
+
+      const handleRIASECAnswer = (score) => {
+        playClickTone();
+        const currentQ = riasecQuestions[questionIdx];
+        const updatedAnswers = { ...answers, [currentQ.category]: score };
+        setAnswers(updatedAnswers);
+
+        if (questionIdx < riasecQuestions.length - 1) {
+          setQuestionIdx(questionIdx + 1);
+        } else {
+          // Finish RIASEC, move to Quiz 2
+          setStage('quiz2');
+          setQuestionIdx(0);
+        }
+      };
+
+      const handleAptitudeAnswer = (option) => {
+        playClickTone();
+        // Calc Results
+        const maxCategory = Object.keys(answers).reduce((a, b) => answers[a] > answers[b] ? a : b, "Social");
+        
+        const nextProgress = {
+          ...progress,
+          currentStation: 2,
+          stamps: { ...progress.stamps, 1: true },
+          station1: {
+            interestResults: {
+              primary: maxCategory,
+              description: getRIASECDesc(maxCategory)
+            },
+            aptitudeResults: {
+              primary: option.trait,
+              description: "Menunjukkan kakekatan cara bertindak dan merespon segala tantangan sehari-hari secara terencana."
+            },
+            completedInterest: true,
+            completedAptitude: true
+          }
+        };
+        onUpdate(nextProgress);
+        playSuccessChime();
+        setStage('result');
+      };
+
+      const getRIASECDesc = (cat) => {
+        const descs = {
+          "Realistic": "Fokus pada praktek fisik, teknikal, mekanikal, dan aktivitas langsung di lapangan kerja fisik.",
+          "Investigative": "Tipe akademis yang senang riset analitikal, matematika rumit, sains, dan sains data komputer.",
+          "Artistic": "Memiliki sensitivitas seni visual, literatur bahasa, musik, dan kebebasan berekspresi inovatif.",
+          "Social": "Sangat senang mendampingi sesama, mengajar anak-anak, mengayomi, membimbing konseling, dan melayani publik.",
+          "Enterprising": "Berjiwa wirausahawan kompetitif, lincah bernegosiasi bisnis, presentasi pidato kepemimpinan.",
+          "Conventional": "Detail-oriented, tertib mengurusi berkas operasional kantor, pembukuan keuangan akuntansi, basis data."
+        };
+        return descs[cat] || "Potensi diri yang berharga untuk dikembangkan.";
+      };
+
+      if (stage === 'intro') {
+        return (
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 space-y-4">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <Icon name="compass" class="w-6 h-6 text-amber-400" /> Stasiun 1: Mengenal Potensi Minat & Bakat
+            </h2>
+            <p class="text-xs text-slate-400">
+              Sesaat lagi kita akan memulai penelusuran jati dirimu agar tidak tersesat dalam memilih jalan belajar. Kita akan menelusuri minat dominan berdasarkan struktur baku teori Holland (RIASEC) serta kematangan bakat bawaanmu!
+            </p>
+            <div class="p-4 bg-slate-950 border border-slate-850 rounded-xl">
+              <p class="text-xs text-indigo-400 font-mono font-semibold">Tantangan Stasiun 1:</p>
+              <ul class="text-[11px] text-slate-400 mt-2 list-disc pl-4 space-y-1">
+                <li>Asesmen Kematangan Minat (RIASEC 6 Dimensi)</li>
+                <li>Asesmen Kekuatan Bakat Respon Jati Diri</li>
+                <li>Mendapatkan Stamp Sertifikasi Stasiun 1</li>
+              </ul>
+            </div>
+            <button
+              onClick={startQuiz}
+              class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 hover:text-white font-bold py-3.5 rounded-xl transition text-xs font-display"
+            >
+              Mulai Asesmen Potensi Sekarang ⚡
+            </button>
+          </div>
+        );
+      }
+
+      if (stage === 'quiz1') {
+        const q = riasecQuestions[questionIdx];
+        const progressPct = Math.round((questionIdx / riasecQuestions.length) * 100);
+        return (
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-6">
+            <div class="flex justify-between items-center border-b border-sidebar border-slate-800 pb-3">
+              <span class="text-slate-450 font-bold font-mono text-[10px] uppercase">Langkah 1: Kuis Minat Jati Diri</span>
+              <span class="text-amber-500 font-bold font-mono text-xs">{questionIdx + 1} / {riasecQuestions.length}</span>
+            </div>
+            <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+              <div class="h-full bg-amber-500 rounded-full" style={{ width: `${progressPct}%` }} />
+            </div>
+            <div class="text-center py-4">
+              <p class="text-lg font-bold text-white select-none">"{q.text}"</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button
+                onClick={() => handleRIASECAnswer(1)}
+                class="bg-slate-950 hover:bg-red-500/10 border border-slate-800 hover:border-red-500/30 text-slate-350 p-4 rounded-xl text-xs font-semibold"
+              >
+                ✖ Sangat Tidak Suka / Tidak Setuju
+              </button>
+              <button
+                onClick={() => handleRIASECAnswer(3)}
+                class="bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-350 p-4 rounded-xl text-xs font-semibold"
+              >
+                — Biasa Saja
+              </button>
+              <button
+                onClick={() => handleRIASECAnswer(5)}
+                class="bg-slate-950 hover:bg-emerald-500/10 border border-slate-800 hover:border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-xs font-bold"
+              >
+                ✔ Sangat Suka / Sangat Setuju
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      if (stage === 'quiz2') {
+        const q = aptitudeQuestions[questionIdx];
+        return (
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-6">
+            <div>
+              <span class="text-indigo-400 font-bold font-mono text-[10px] uppercase block">Langkah 2: Profiling Kemampuan Kerja</span>
+              <h3 class="text-base font-bold text-white mt-1">{q.text}</h3>
+            </div>
+            <div class="space-y-3">
+              {q.options.map((opt, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleAptitudeAnswer(opt)}
+                  class="w-full bg-slate-950 hover:bg-slate-850 p-4 border border-slate-850 hover:border-slate-700 text-left rounded-xl text-xs font-semibold text-slate-200 transition"
+                >
+                  {opt.text}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 text-center space-y-6">
+          <div class="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400">
+            <Icon name="check-circle" className="w-10 h-10 mx-auto" />
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-white">Asesmen Stasiun 1 Selesai! 🎉</h3>
+            <p class="text-xs text-slate-400 mt-2 max-w-sm mx-auto">
+              Satu stempel penghargaan telah dicap manis pada tiket perjalananmu! Berikut profil dirimu:
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto text-left">
+            <div class="bg-slate-955/60 p-4 rounded-xl border border-slate-850">
+              <span class="text-[9px] uppercase font-mono font-bold text-amber-500">Kategori Minat</span>
+              <h4 class="text-base font-extrabold text-white mt-1">{progress.station1.interestResults?.primary}</h4>
+              <p class="text-[10px] text-slate-400 leading-normal mt-1">{progress.station1.interestResults?.description}</p>
+            </div>
+            <div class="bg-slate-955/60 p-4 rounded-xl border border-slate-850">
+              <span class="text-[9px] uppercase font-mono font-bold text-emerald-400">Gaya Bakat Utama</span>
+              <h4 class="text-base font-extrabold text-white mt-1">{progress.station1.aptitudeResults?.primary}</h4>
+              <p class="text-[10px] text-slate-400 leading-normal mt-1">{progress.station1.aptitudeResults?.description}</p>
+            </div>
+          </div>
+
+          <div class="pt-4 max-w-md mx-auto">
+            <button
+              onClick={() => {
+                playClickTone();
+                setStage('intro');
+              }}
+              class="text-indigo-400 hover:text-indigo-300 font-bold text-xs"
+            >
+              Ulangi Tes Kepribadian 🔄
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+
+    // ==========================================
+    // STATION 2 (KELOLA EMOSI)
+    // ==========================================
+    function StationTwo({ progress, onUpdate }) {
+      const [mood, setMood] = useState('biasa');
+      const [journalText, setJournalText] = useState('');
+      const [aiResponse, setAiResponse] = useState(null);
+      const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+      const moodFaces = [
+        { id: 'sangat_senang', label: '🌻 Sangat Bahagia', color: 'bg-amber-500/15 border-amber-500/40 text-amber-400' },
+        { id: 'senang', label: '🙂 Senang/Gembira', color: 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400' },
+        { id: 'biasa', label: '😐 Tenang/Biasa', color: 'bg-slate-500/15 border-slate-500/40 text-slate-400' },
+        { id: 'sedih', label: '😢 Sedih/Gundah', color: 'bg-sky-500/15 border-sky-500/40 text-sky-400' },
+        { id: 'marah', label: '😡 Kesal/Marah', color: 'bg-rose-500/15 border-rose-500/40 text-rose-400' },
+      ];
+
+      const handleMoodLog = (selectedId) => {
+        playClickTone();
+        setMood(selectedId);
+      };
+
+      const handleAnalyzeJournal = (e) => {
+        e.preventDefault();
+        if (!journalText.trim()) return;
+        
+        setIsAnalyzing(true);
+        playClickTone();
+
+        // Local smart Counselor algorithm simulating Gemini AI
+        setTimeout(() => {
+          const textLower = journalText.toLowerCase();
+          let dominantEmotion = moodFaces.find(m => m.id === mood)?.label || "Biasa Saja";
+          let sentiment = "Netral";
+          let advice = "Terima kasih sudah mencurahkan isi hatimu. Setiap helaan keluh kesahmu berharga.";
+
+          if (textLower.includes("stres") || textLower.includes("lelah") || textLower.includes("capek") || textLower.includes("berat") || textLower.includes("sulit")) {
+            sentiment = "Negatif / Tertekan";
+            advice = "Wajar bila adakalanya pundak terasa lelah, kawan. Sisihkan jeda sesaat, tarik napas dalam, dan yakini bahwa beban ini hanyalah bagian dari pelangi yang akan datang. Hubungi guru BK bila kamu butuh teman bimbingan.";
+          } else if (textLower.includes("senang") || textLower.includes("bahagia") || textLower.includes("syukur") || textLower.includes("bangga") || textLower.includes("berhasil")) {
+            sentiment = "Sangat Positif";
+            advice = "Luar biasa! Pertahankan energi positif ini. Bagikan kebahagiaanmu ke orang di sekeliling agar sinarmu mencerahkan dunia mereka juga.";
+          } else if (textLower.includes("marah") || textLower.includes("benci") || textLower.includes("kesal") || textLower.includes("iri") || textLower.includes("berantem")) {
+            sentiment = "Campuran / Defensif";
+            advice = "Rasa amarah adalah alarm alami tubuh bahwa ada batasanmu yang sedang diganggu. Duduklah santai, minum air putih, dan bicarakan ini baik-baik tanpa emosi yang meledak.";
+          } else if (textLower.includes("bully") || textLower.includes("kasar") || textLower.includes("diejek") || textLower.includes("sendiri")) {
+            sentiment = "Terancam / Butuh Perhatian";
+            advice = "Kamu sangat aman di platform ini. Ingat, kamu tidak pernah sendiri menghadapi ejekan! Segera laporkan perlakuan kurang mengenakkan ini di Stasiun 3 atau temui Konselor BK di sekolah secepatnya.";
+          } else {
+            sentiment = "Stabil / Tenang";
+            advice = "Membiasakan menuangkan pikiran dalam tulisan adalah cara paling sehat untuk menjaga kewaspadaan mental spiritualmu. Teruskan kebiasaan baik ini!";
+          }
+
+          const analysis = {
+            sentiment,
+            dominantEmotion,
+            advice,
+            keywords: textLower.split(/\s+/).filter(w => w.length > 4).slice(0, 4)
+          };
+
+          const newProg = {
+            ...progress,
+            currentStation: 3,
+            stamps: { ...progress.stamps, 2: true },
+            station2: {
+              moodLogs: [
+                ...(progress.station2?.moodLogs || []),
+                { id: `mood-${Date.now()}`, mood: mood, text: "Dicatat di Stasiun 2", date: new Date().toLocaleDateString('id-ID') }
+              ],
+              journalEntries: [
+                ...(progress.station2?.journalEntries || []),
+                { id: `jrn-${Date.now()}`, content: journalText, date: new Date().toLocaleDateString('id-ID'), analysis }
+              ]
+            }
+          };
+
+          onUpdate(newProg);
+          setAiResponse(analysis);
+          setIsAnalyzing(false);
+          playSuccessChime();
+        }, 1200);
+      };
+
+      return (
+        <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 space-y-6" id="station-2-panel">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <Icon name="smile" class="w-6 h-6 text-emerald-400" /> Stasiun 2: Kelola Emosi & AI Jurnal Counselor
+            </h2>
+            <p class="text-xs text-slate-450 mt-1">
+              Setiap laju lokomotif membutuhkan pembakaran uap yang seimbang. Catat rona perasaanmu hari ini dan ketikkan curhatan hatimu untuk dianalisis oleh AI Counselor!
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <h4 class="text-xs font-bold text-slate-300">1. Bagaimana suasana hatimu saat ini?</h4>
+            <div class="flex flex-wrap gap-2.5">
+              {moodFaces.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleMoodLog(item.id)}
+                  type="button"
+                  class={`py-2.5 px-4 rounded-xl text-xs font-semibold border transition ${
+                    mood === item.id 
+                      ? 'bg-indigo-600 border-indigo-400 text-white shadow-md' 
+                      : `${item.color} bg-slate-950 hover:opacity-100 opacity-70`
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <form onSubmit={handleAnalyzeJournal} class="space-y-3 pt-2">
+            <h4 class="text-xs font-bold text-slate-300">2. Jurnal BK (Tulis apa saja yang sedang berkecamuk di dalam pikiranmu):</h4>
+            <textarea
+              placeholder="Contoh: Saya akhir-akhir ini merasa sangat lelah belajar dan takut ulangan mtk di sekolah..."
+              value={journalText}
+              onChange={(e) => setJournalText(e.target.value)}
+              class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500 h-28"
+              maxLength={1000}
+            />
+
+            <button
+              type="submit"
+              disabled={isAnalyzing || !journalText.trim()}
+              class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider font-display transition"
+            >
+              {isAnalyzing ? 'Mengevaluasi Jurnal Dengan Counselor AI ...' : 'Minta Analisis & Nasehat AI Counselor ⚡'}
+            </button>
+          </form>
+
+          {aiResponse && (
+            <div class="bg-indigo-950/20 border border-indigo-500/20 p-5 rounded-2xl space-y-3 animate-fade-in">
+              <div class="flex items-center gap-2 border-b border-indigo-500/10 pb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider font-mono">Hasil Analisis Diagnostik Jurnal Siswa</h4>
+              </div>
+
+              <div class="space-y-1.5 text-xs text-slate-300">
+                <p>🎭 Sentimen Pikiran: <strong class="text-white">{aiResponse.sentiment}</strong></p>
+                <p>💖 Dominan Mood: <strong class="text-white">{aiResponse.dominantEmotion}</strong></p>
+                <div class="mt-2 text-[11px] bg-slate-950/80 border border-slate-800 p-3 rounded-xl italic">
+                  <span class="text-emerald-400 font-bold block not-italic mb-1">Wejangan Guru Konselor BK:</span>
+                  "{aiResponse.advice}"
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+
+    // ==========================================
+    // STATION 3 (HUBUNGAN SOSIAL)
+    // ==========================================
+    function StationThree({ progress, onUpdate }) {
+      const [signed, setSigned] = useState(progress.station3?.pledgeSigned || false);
+      const [signatureText, setSignatureText] = useState(progress.name || '');
+      const [score, setScore] = useState(0);
+      const [currentQ, setCurrentQ] = useState(0);
+      const [bullyingCompleted, setBullyingCompleted] = useState(progress.station3?.bullyingCompleted || false);
+
+      const scenarios = [
+        {
+          id: 1,
+          text: "Seorang kawan melempar hinaan rasis/SARA dengan alasan bercanda bercanda dalam obrolan grup sekolah kelas.",
+          options: [
+            { text: "Bercanda itu sah saja, tak usah terlalu dimasukkan ke hati batin.", isCorrect: false, feedback: "Kurang tepat. Menghina SARA walau dibalut lelucon tetaplah laku verbal bullying berbahaya!" },
+            { text: "Menegur halus atau laporkan ke pengurus kelas agar dilarang mengancam rona kerukunan.", isCorrect: true, feedback: "Luar biasa! Berani bertindak tegas menjaga koridor toleransi adalah teladan pertemanan sehat." }
+          ]
+        },
+        {
+          id: 2,
+          text: "Melihat postingan mempermalukan musuh kelas yang disebar secara rahasia di kanal media sosial.",
+          options: [
+            { text: "Ikut tertawa dan menyebarkannya kembali agar terus ramai.", isCorrect: false, feedback: "Kurang baik! Melakukan repost konten rundungan termasuk tindakan Cyber-bullying pasif." },
+            { text: "Melaporkan akun/postingan tersebut dan membela kehormatannya secara pantas.", isCorrect: true, feedback: "Hebat! Kamu melindungi kedaulatan digital temanmu." }
+          ]
+        }
+      ];
+
+      const handleGameOption = (option) => {
+        playClickTone();
+        if (option.isCorrect) {
+          setScore(score + 1);
+        }
+        alert(option.feedback);
+
+        if (currentQ < scenarios.length - 1) {
+          setCurrentQ(currentQ + 1);
+        } else {
+          setBullyingCompleted(true);
+        }
+      };
+
+      const handlePledgeSign = (e) => {
+        e.preventDefault();
+        if (!signatureText.trim()) return;
+
+        const nextProg = {
+          ...progress,
+          currentStation: 4,
+          stamps: { ...progress.stamps, 3: true },
+          station3: {
+            bullyingCompleted: true,
+            pledgeSigned: true,
+            pledgeDate: new Date().toLocaleDateString('id-ID')
+          }
+        };
+
+        onUpdate(nextProg);
+        setSigned(true);
+        playSuccessChime();
+      };
+
+      return (
+        <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 space-y-6" id="station-3-panel">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <Icon name="users" class="w-6 h-6 text-sky-400" /> Stasiun 3: Relasi Sehat & Deklarasi Anti-Bullying
+            </h2>
+            <p class="text-xs text-slate-450 mt-1">
+              Bimbingan kerohanian melatih persahabatan yang kokoh tanpa mengejek. Selesaikan kuis dilema sosial, lalu bubuhkan tanda tangan ikrar komitmen bersamamu!
+            </p>
+          </div>
+
+          {!bullyingCompleted ? (
+            <div class="bg-slate-950 border border-slate-850 p-5 rounded-2xl space-y-4">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <span class="text-indigo-400 font-bold uppercase">Mini-Game: Detektif Damai</span>
+                <span class="text-slate-500 font-bold">{currentQ + 1} / {scenarios.length}</span>
+              </div>
+              <p class="text-sm font-bold text-slate-200">"{scenarios[currentQ].text}"</p>
+              <div class="space-y-2 pt-2">
+                {scenarios[currentQ].options.map((opt, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleGameOption(opt)}
+                    class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 p-3.5 text-left text-xs font-semibold text-slate-200 rounded-xl transition"
+                  >
+                    {opt.text}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : !signed ? (
+            <div class="bg-indigo-950/20 border border-indigo-500/20 p-5 rounded-2xl space-y-4 text-center">
+              <div class="max-w-md mx-auto space-y-2">
+                <Icon name="shield-alert" class="w-10 h-10 text-amber-500 mx-auto" />
+                <h3 class="text-sm font-extrabold uppercase text-white font-display">IKRAR PILAR PERSAHABATAN BK DAMAI ✍</h3>
+                <p class="text-[10px] text-slate-400 leading-normal">
+                  "Saya berjanji dengan segenap kesadaran nurani untuk menolak segala rupa perundungan (bullying) fisik, verbal, maupun cyber di lingkungan belajar, sekolah, dan internet demi menjaga kedamaian rukun pertemanan."
+                </p>
+              </div>
+
+              <form onSubmit={handlePledgeSign} class="max-w-xs mx-auto space-y-3">
+                <input
+                  type="text"
+                  placeholder="Ketik namamu sebagai bukti tanda tangan..."
+                  value={signatureText}
+                  onChange={(e) => setSignatureText(e.target.value)}
+                  class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-center text-xs font-mono font-bold text-amber-400"
+                  required
+                />
+                <button
+                  type="submit"
+                  class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs transition"
+                >
+                  Tandatangani Komitmen & Raih Cap Stempel!
+                </button>
+              </form>
+            </div>
+          ) : (
+            <div class="bg-slate-950 border border-slate-850 p-6 rounded-2xl text-center space-y-4">
+              <Icon name="check-circle" class="w-12 h-12 text-emerald-400 mx-auto" />
+              <div>
+                <h3 class="text-md font-bold text-white">Ikrar Deklarasi Berhasil Ditandatangani! 🎉</h3>
+                <p class="text-xs text-slate-500 font-mono mt-1">Dicatat pada: {progress.station3?.pledgeDate || new Date().toLocaleDateString('id-ID')}</p>
+              </div>
+              <div class="max-w-md bg-indigo-950/10 border border-indigo-500/10 p-3 rounded-xl mx-auto">
+                <p class="text-[11px] text-slate-400 leading-relaxed italic">
+                  Selamat, namamu telah terpatri harum dalam daftar penumpang rukun B-Express. Terus tebarkan kasih sayang dan buang jauh rona kebencian!
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+
+    // ==========================================
+    // STATION 4 (KARIER & PELUANG)
+    // ==========================================
+    function StationFour({ progress, onUpdate }) {
+      const [stage, setStage] = useState('intro'); // intro, quiz, result
+      const [answers, setAnswers] = useState([]);
+      const [currQ, setCurrQ] = useState(0);
+
+      const careerQuestions = [
+        {
+          id: 1,
+          question: "Bidang lingkungan belajar dan kerja masa depan manakah yang membuat hatimu berdebar senang?",
+          options: [
+            { text: "🔬 Laboratorium, Pusat Koding Teknologi, atau Pusat Riset Sains", field: "sains_teknologi", desc: "Sains & Teknologi (STEM)" },
+            { text: "⚖ Instansi Pemberdayaan Publik, Biro Konsultasi Psikologi Sosial", field: "sosial_humaniora", desc: "Sosial & Humaniora" },
+            { text: "🎨 Studio Animasi Kreatif, Teater Budaya, Rumah Mode Seni", field: "seni_sastra", desc: "Seni & Industri Kreatif" },
+            { text: "🏢 Perusahaan Startup Niaga, Bank Keuangan, Perjalanan Pariwisata", field: "jasa_bisnis", desc: "Sektor Bisnis, Jasa & Tata Usaha" }
+          ]
+        },
+        {
+          id: 2,
+          question: "Apa bentuk pencapaian hidup yang paling mendefinisikan mimpi keberhasilanmu?",
+          options: [
+            { text: "Menciptakan teknologi mutakhir kecerdasan buatan baru", field: "sains_teknologi", desc: "Sains & Teknologi (STEM)" },
+            { text: "Meringankan permasalahan kemiskinan atau duka batin sesama manusia", field: "sosial_humaniora", desc: "Sosial & Humaniora" },
+            { text: "Menghasilkan karya seni master yang dikenang lintas generasi", field: "seni_sastra", desc: "Seni & Industri Kreatif" },
+            { text: "Mengepalai tim multinasional atau membangun jejaring waralaba kokoh", field: "jasa_bisnis", desc: "Sektor Bisnis, Jasa & Tata Usaha" }
+          ]
+        }
+      ];
+
+      const startQuiz = () => {
+        setStage('quiz');
+        setAnswers([]);
+        setCurrQ(0);
+        playClickTone();
+      };
+
+      const handleOptionClick = (opt) => {
+        playClickTone();
+        const updatedAns = [...answers, opt.field];
+        setAnswers(updatedAns);
+
+        if (currQ < careerQuestions.length - 1) {
+          setCurrQ(currQ + 1);
+        } else {
+          // Process major
+          const counts = {};
+          let maxField = "sains_teknologi";
+          let maxCount = 0;
+
+          [...updatedAns].forEach((field) => {
+            counts[field] = (counts[field] || 0) + 1;
+            if (counts[field] > maxCount) {
+              maxCount = counts[field];
+              maxField = field;
+            }
+          });
+
+          const resultPayload = getMajorByField(maxField);
+          const nextProg = {
+            ...progress,
+            currentStation: 5,
+            stamps: { ...progress.stamps, 4: true },
+            station4: {
+              completedMajorTest: true,
+              majorResult: resultPayload,
+              selectedJobSector: maxField
+            }
+          };
+
+          onUpdate(nextProg);
+          setStage('result');
+          playSuccessChime();
+        }
+      };
+
+      const getMajorByField = (field) => {
+        const majors = {
+          "sains_teknologi": {
+            title: "Sains, Sistem Informasi, & Teknologi (STEM)",
+            description: "Memecahkan kebuntuan peradaban menggunakan pemetaan riset algoritma koding sistematis.",
+            jobs: ["Software Engineering", "AI Engineer", "Cyber Security", "Sains Data Analyst"]
+          },
+          "sosial_humaniora5": {
+            title: "Suku Humaniora, Psikologi & Pendidikan Madrasah",
+            description: "Bergerak di ranah empati kemanusiaan untuk memahami pola perilaku serta mencerahkan batin.",
+            jobs: ["Konselor BK", "HRD Perusahaan", "Diplomat Negara", "Pakar Sosiologi Perkotaan"]
+          },
+          "seni_sastra": {
+            title: "Seni Desain Visual, Sastra Bahasa & Karya Rekreasi",
+            description: "Mengeksplorasi dimensi estetika, seni rupa kreatif, dan penulisan cerita interaktif.",
+            jobs: ["UX Designer", "Illustrator Animasi", "Screenwriter Film", "Game Designer"]
+          },
+          "jasa_bisnis": {
+            title: "Manajemen Bisnis Keuangan, Akuntansi & Logistik Kereta",
+            description: "Mengoptimalkan arus modal perdagangan lintas digital nasional.",
+            jobs: ["Digital Marketer", "Akuntan Publik", "CEO Startup Founder", "Manajer Logistik Kereta"]
+          }
+        };
+        return majors[field] || majors["sains_teknologi"];
+      };
+
+      if (stage === 'intro') {
+        return (
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 space-y-4">
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <Icon name="briefcase" class="w-6 h-6 text-indigo-400" /> Stasiun 4: Eksplorasi Minat Karier & Rekomendasi Jurusan
+            </h2>
+            <p class="text-xs text-slate-400">
+              Satu stasiun tersisa untuk membuka tabir masa depan! Jawab kuis simulasi minat karir ini untuk memetakan rumpun jurusan kuliah atau kejuruan yang paling sinergis dengan nilai-nilai hidupmu.
+            </p>
+            <button
+              onClick={startQuiz}
+              class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold py-3 rounded-xl text-xs uppercase"
+            >
+              Mulai Pemfilteran Karier Sekarang ⚡
+            </button>
+          </div>
+        );
+      }
+
+      if (stage === 'quiz') {
+        const q = careerQuestions[currQ];
+        return (
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-5">
+            <div class="flex justify-between items-center text-xs font-mono border-b border-slate-800 pb-2">
+              <span class="text-slate-500 uppercase font-bold">Kuis Jurusan Studi</span>
+              <span class="text-indigo-400 font-bold">{currQ + 1} / {careerQuestions.length}</span>
+            </div>
+            <h4 class="text-sm font-bold text-slate-200">{q.question}</h4>
+            <div class="space-y-2.5 pt-2">
+              {q.options.map((opt, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleOptionClick(opt)}
+                  class="w-full bg-slate-950 hover:bg-slate-850 p-4 border border-slate-850 text-left text-xs font-semibold text-slate-300 rounded-xl transition"
+                >
+                  {opt.text}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 text-center space-y-6">
+          <Icon name="award" class="w-12 h-12 text-indigo-400 mx-auto" />
+          <div>
+            <h3 class="text-lg font-bold text-white">Peta Lintasan Kariermu Terbuka! 🎓</h3>
+            <p class="text-xs text-slate-400 font-mono mt-1">Stempel ke-4 berhasil tersemat indah</p>
+          </div>
+
+          <div class="bg-slate-950 border border-slate-850 p-5 rounded-2xl max-w-md mx-auto text-left space-y-3">
+            <div>
+              <span class="text-[9px] uppercase font-mono font-bold text-indigo-400">Jurusan Rekomendasi BK</span>
+              <h4 class="text-sm font-extrabold text-white mt-1">{progress.station4.majorResult?.title || "Sains & Teknologi"}</h4>
+              <p class="text-[11px] text-slate-400 mt-1">{progress.station4.majorResult?.description || "Melatih nalar logika pemecahan masalah."}</p>
+            </div>
+            
+            <div class="pt-2 border-t border-slate-850">
+              <span class="text-[9px] uppercase font-mono font-bold text-amber-500">Alternatif Profesi Masa Depan:</span>
+              <div class="flex flex-wrap gap-1.5 mt-1.5">
+                {(progress.station4.majorResult?.jobs || ["Data Scientist", "Software Developer"]).map((job, idx) => (
+                  <span key={idx} class="bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[10px] px-2.5 py-0.5 rounded font-mono">
+                    ★ {job}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+
+    // ==========================================
+    // STATION 5 (MASA DEPAN / GOALS)
+    // ==========================================
+    function StationFive({ progress, onUpdate }) {
+      const [goals, setGoals] = useState(progress.station5?.goals || []);
+      const [newGoalText, setNewGoalText] = useState('');
+      const [goalType, setGoalType] = useState('short');
+      const [goalYear, setGoalYear] = useState('2026');
+
+      const handleAddGoal = (e) => {
+        e.preventDefault();
+        if (!newGoalText.trim()) return;
+
+        playClickTone();
+        const freshGoal = {
+          id: `goal-${Date.now()}`,
+          type: goalType,
+          text: newGoalText.trim(),
+          targetYear: goalType === 'dream' ? 'Abadi' : goalYear,
+          completed: false
+        };
+
+        const updatedGoals = [...goals, freshGoal];
+        setGoals(updatedGoals);
+        setNewGoalText('');
+
+        const nextProg = {
+          ...progress,
+          station5: {
+            ...progress.station5,
+            goals: updatedGoals
+          }
+        };
+        onUpdate(nextProg);
+      };
+
+      const handleToggleGoal = (id) => {
+        playClickTone();
+        const updated = goals.map(g => g.id === id ? { ...g, completed: !g.completed } : g);
+        setGoals(updated);
+
+        const nextProg = {
+          ...progress,
+          station5: {
+            ...progress.station5,
+            goals: updated
+          }
+        };
+        onUpdate(nextProg);
+      };
+
+      const handleDeleteGoal = (id) => {
+        playClickTone();
+        const updated = goals.filter(g => g.id !== id);
+        setGoals(updated);
+
+        const nextProg = {
+          ...progress,
+          station5: {
+            ...progress.station5,
+            goals: updated
+          }
+        };
+        onUpdate(nextProg);
+      };
+
+      const handleCompleteJourney = () => {
+        playClickTone();
+        const next = {
+          ...progress,
+          currentStation: 5,
+          stamps: { ...progress.stamps, 5: true },
+          station5: {
+            goals: goals,
+            completedJourney: true
+          }
+        };
+        onUpdate(next);
+        playSuccessChime();
+      };
+
+      return (
+        <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 space-y-6" id="station-5-panel">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2 font-display">
+              <Icon name="sparkles" class="w-6 h-6 text-pink-400" /> Stasiun 5: Sasaran Masa Depan & Mimpi Hidup
+            </h2>
+            <p class="text-xs text-slate-450 mt-1">
+              Merencanakan sasaran target tahunan adalah langkah paling mawas untuk merealisasikan ekspektasi. Tuliskan rencana jangka pendek, jangka panjang, maupun mimpimu di bawah ini!
+            </p>
+          </div>
+
+          {!progress.station5?.completedJourney ? (
+            <div class="space-y-5">
+              {/* Add form */}
+              <form onSubmit={handleAddGoal} class="bg-slate-950 border border-slate-850 p-4 rounded-2xl space-y-3">
+                <div class="flex items-center gap-1.5 border-b border-slate-850 pb-2 mb-2">
+                  <Icon name="ticket" className="w-4 h-4 text-pink-400" />
+                  <h4 class="text-xs font-bold text-slate-350">Buat Sasaran Sasaran Baru</h4>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                  <div class="sm:col-span-8">
+                    <input
+                      type="text"
+                      placeholder="Contoh: Lulus SNMPTN / Menguasai Bahasa Python..."
+                      value={newGoalText}
+                      onChange={(e) => setNewGoalText(e.target.value)}
+                      class="w-full bg-slate-900 border border-slate-750 px-3.5 py-2 rounded-xl text-xs text-slate-100 placeholder-slate-600 focus:outline-none"
+                      required
+                    />
+                  </div>
+                  <div class="sm:col-span-2">
+                    <select
+                      value={goalType}
+                      onChange={(e) => setGoalType(e.target.value)}
+                      class="w-full bg-slate-900 border border-slate-750 p-2.5 rounded-xl text-xs text-slate-300 font-sans cursor-pointer focus:outline-none"
+                    >
+                      <option value="short">Pendek (1 Thn)</option>
+                      <option value="long">Panjang (5 Thn)</option>
+                      <option value="dream">Mimpi Abadi</option>
+                    </select>
+                  </div>
+                  <div class="sm:col-span-2">
+                    <input
+                      type="text"
+                      placeholder="Thn: 2028"
+                      value={goalYear}
+                      onChange={(e) => setGoalYear(e.target.value)}
+                      class="w-full bg-slate-900 border border-slate-750 px-3 py-2 rounded-xl text-center text-xs font-mono text-slate-100 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  class="w-full bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold py-2 rounded-xl text-xs uppercase"
+                >
+                  Tambahkan ke Daftar Mimpi +
+                </button>
+              </form>
+
+              {/* Goals list */}
+              <div class="space-y-2">
+                <h4 class="text-xs font-bold text-slate-400 flex items-center gap-1">📋 Daftar Peta Impianmu ({goals.length}):</h4>
+                {goals.length > 0 ? (
+                  <div class="space-y-1.5">
+                    {goals.map((g) => (
+                      <div 
+                        key={g.id} 
+                        class="bg-slate-950 border border-slate-850 p-3 rounded-xl flex items-center justify-between gap-3 text-xs"
+                      >
+                        <div class="flex items-center gap-2.5">
+                          <input
+                            type="checkbox"
+                            checked={g.completed}
+                            onChange={() => handleToggleGoal(g.id)}
+                            class="w-4 h-4 rounded text-pink-500 focus:ring-0 bg-slate-900 border-slate-750 cursor-pointer"
+                          />
+                          <div>
+                            <span class={`font-semibold ${g.completed ? 'line-through text-slate-550' : 'text-slate-200'}`}>
+                              {g.text}
+                            </span>
+                            <span class="text-[9px] uppercase font-mono bg-slate-900 border border-slate-800 text-slate-450 px-1.5 py-0.2 rounded ml-2">
+                              {g.type === 'short' ? 'Jk Pendek' : g.type === 'long' ? 'Jk Panjang' : 'Mimpi'} • target {g.targetYear}
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteGoal(g.id)}
+                          type="button"
+                          class="p-1 border border-slate-850 text-slate-500 hover:text-red-400 hover:border-red-500/20 rounded transition"
+                        >
+                          <Icon name="trash-2" className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p class="text-xs text-slate-600 italic">Belum ada sasaran tertulis. Tambahkan mimpi gilang-gemilangmu di atas!</p>
+                )}
+              </div>
+
+              {/* Submit / journey complete */}
+              <div class="pt-4 border-t border-slate-800 text-center">
+                <button
+                  onClick={handleCompleteJourney}
+                  class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-8 py-3.5 rounded-xl text-xs uppercase cursor-pointer transition font-display"
+                >
+                  Selesaikan Perjalanan Kereta Kehidupan & Terbitkan Tiket Emas! 👑
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div class="bg-gradient-to-br from-amber-500/10 via-slate-950 to-indigo-500/10 border-2 border-amber-500/30 p-8 rounded-3xl text-center space-y-6 relative overflow-hidden" id="certificate-gold-ticket">
+              <div class="absolute -top-10 -right-10 w-40 h-40 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
+              
+              <div class="max-w-md mx-auto space-y-3">
+                <div class="inline-flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-400 font-mono text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                  ★ PASSPOR PERJALANAN BK LULUS ★
+                </div>
+                <h3 class="text-2xl font-black text-white font-display">TIKET EMAS KELULUSAN B-EXPRESS</h3>
+                <p class="text-[11px] text-slate-400 leading-relaxed font-sans">
+                  "Menyatakan dengan penuh rasa bangga bahwasanya penumpang di bawah ini telah berhasil melewati Kelima Stasiun Bimbingan Konseling Kehidupan dengan evaluasi optimal minat, emosi, relasi sosial, serta peta karier mandiri."
+                </p>
+              </div>
+
+              <div class="border-y border-dashed border-slate-800 py-6 max-w-sm mx-auto space-y-1.5">
+                <span class="text-slate-500 text-[10px] uppercase font-mono tracking-wider">Lulusan Terbaik BK AI:</span>
+                <h4 class="text-xl font-black text-white font-mono">{progress.name}</h4>
+                <p class="text-xs text-amber-400 font-mono">Nomor Registrasi: #{progress.ticketId}</p>
+                <div class="flex items-center justify-center gap-2 pt-2 text-[10px] text-slate-500 font-mono">
+                  <span>✔ RIASEC: {progress.station1?.interestResults?.primary || 'Investigasi'}</span>
+                  <span>•</span>
+                  <span>✔ KARIER: {progress.station4?.selectedJobSector?.toUpperCase() || 'STEM'}</span>
+                </div>
+              </div>
+
+              <div class="text-[10px] text-slate-500 italic max-w-xs mx-auto">
+                "Rel yang terbujur bukanlah sekedar jalan lurus, melainkan titian takdir dan mimpi muliamu. Teruslah berjalan dengan gagah!"
+              </div>
+
+              <div class="pt-4 flex justify-center gap-3">
+                <button
+                  onClick={() => window.print()}
+                  class="bg-amber-500 hover:bg-amber-600 text-slate-950 hover:text-white font-bold text-xs py-2.5 px-6 rounded-xl transition"
+                >
+                  Cetak Piagam Kelulusan 🖨
+                </button>
+                <button
+                  onClick={() => {
+                    playClickTone();
+                    const fresh = { ...progress };
+                    fresh.station5.completedJourney = false;
+                    onUpdate(fresh);
+                  }}
+                  class="text-xs text-slate-550 hover:text-slate-300 font-semibold"
+                >
+                  Edit Sasaran Impian 📋
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+
+    // ==========================================
+    // GURU / COUNSELOR MONITORING DASHBOARD
+    // ==========================================
+    function GuruDashboard({ onBackToApp }) {
+      const [isAuthenticated, setIsAuthenticated] = useState(false);
+      const [pinInput, setPinInput] = useState('');
+      const [authError, setAuthError] = useState('');
+      const [students, setStudents] = useState([]);
+      const [searchTerm, setSearchTerm] = useState('');
+      const [stationFilter, setStationFilter] = useState('all');
+      const [selectedStudent, setSelectedStudent] = useState(null);
+
+      // Local storage student logs
+      const loadLocalSinks = () => {
+        try {
+          const registered = localStorage.getItem('kereta_bk_progress');
+          const list = [];
+          if (registered) {
+            list.push(JSON.parse(registered));
+          }
+          return list;
+        } catch (err) {
+          return [];
+        }
+      };
+
+      useEffect(() => {
+        if (isAuthenticated) {
+          const loaded = loadLocalSinks();
+          setStudents(loaded);
+        }
+      }, [isAuthenticated]);
+
+      const handleLogin = (e) => {
+        e.preventDefault();
+        if (pinInput === '1234' || pinInput.toLowerCase() === 'guru') {
+          setIsAuthenticated(true);
+          setAuthError('');
+          playSuccessChime();
+        } else {
+          setAuthError('Pin salah! Gunakan: "1234" atau "guru"');
+        }
+      };
+
+      const handlePreseedMockData = () => {
+        playSuccessChime();
+        const mocks = [
+          {
+            ticketId: "BK-TR-8724",
+            name: "Ahmad Reynaldi",
+            currentStation: 5,
+            stamps: { 1: true, 2: true, 3: true, 4: true, 5: true },
+            station1: {
+              interestResults: { primary: "Realistic", description: "Menyukai kerja praktikal fisik lapangan rona mekanikal." },
+              aptitudeResults: { primary: "Praktis/Eksekutor", description: "Lakukan eksekusi langsung tindakan fisik cepat." }
+            },
+            station2: {
+              moodLogs: [{ id: "m-1", mood: "senang", text: "Senang koding sederhana", date: "09/06/2026" }],
+              journalEntries: [{ id: "j-1", content: "Kepikiran membuat software pendeteksi mood BK yang bisa membantuku merawat relasi dengan kawan.", analysis: { sentiment: "Sangat Positif", dominantEmotion: "🙂 Senang", advice: "Pertahankan ketekunanmu!" } }]
+            },
+            station3: { pledgeSigned: true, pledgeDate: "09/06/2026" },
+            station4: { completedMajorTest: true, majorResult: { title: "Sains & Teknologi (STEM)", description: "Berpikir logis.", jobs: ["Engineer", "Analyst"] } },
+            station5: { goals: [{ text: "Lulus ujian MTK", type: "short", completed: true }, { text: "Kuliah IT", type: "long", completed: false }] }
+          },
+          {
+            ticketId: "BK-TR-4299",
+            name: "Siti Rahmawati",
+            currentStation: 3,
+            stamps: { 1: true, 2: true, 3: true },
+            station1: {
+              interestResults: { primary: "Social", description: "Senang berjejaring dan merawat ikatan rukun pertemanan sesama sipil." }
+            },
+            station2: {
+              moodLogs: [{ id: "m-2", mood: "sedih", text: "Kucing sakit tadi pagi", date: "09/06/2026" }],
+              journalEntries: [{ id: "j-2", content: "Saya merasa sedih sekali karena tadi dibilang malas oleh kawan sebelah bangku.", analysis: { sentiment: "Terancam / Butuh Perhatian", dominantEmotion: "😢 Sedih", advice: "Jangan bersedih Siti, konselor BK siap menjagamu." } }]
+            },
+            station3: { pledgeSigned: true, pledgeDate: "09/06/2026" },
+            station4: { completedMajorTest: false },
+            station5: { goals: [] }
+          }
+        ];
+
+        // Merge with current list
+        const currentList = loadLocalSinks();
+        setStudents([...currentList, ...mocks]);
+      };
+
+      const handleClear = () => {
+        if (confirm("Kosongkan data pancingan (mock) dashboard ini?")) {
+          setStudents(loadLocalSinks());
+          setSelectedStudent(null);
+          playClickTone();
+        }
+      };
+
+      const filtered = students.filter(s => {
+        const matchesS = s.name.toLowerCase().includes(searchTerm.toLowerCase()) || s.ticketId.includes(searchTerm);
+        const matchesSt = stationFilter === 'all' || s.currentStation === Number(stationFilter);
+        return matchesS && matchesSt;
+      });
+
+      if (!isAuthenticated) {
+        return (
+          <div class="max-w-md mx-auto my-12 bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6" id="guru-login-panel">
+            <div class="text-center space-y-2">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto">
+                <Icon name="lock" className="w-6 h-6 text-indigo-400" />
+              </div>
+              <h2 class="text-xl font-bold text-white font-display">Gerbang Akses Dasbor Guru BK</h2>
+              <p class="text-xs text-slate-400 font-sans">
+                Gunakan panel konselor ini untuk memantau rona emosi, bakat minat, dan sasaran mawas siswa kelas Anda.
+              </p>
+            </div>
+
+            <form onSubmit={handleLogin} class="space-y-4">
+              <div>
+                <label class="block text-xs uppercase tracking-wider font-mono font-bold text-slate-500 mb-1.5">
+                  Masukkan PIN Akses Guru:
+                </label>
+                <input
+                  type="password"
+                  placeholder="PIN: ketik '1234' atau 'guru'"
+                  value={pinInput}
+                  onChange={(e) => setPinInput(e.target.value)}
+                  class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-center font-mono"
+                  autoFocus
+                />
+                {authError && (
+                  <p class="text-red-500 text-xs mt-1.5 font-semibold text-center animate-pulse">
+                    {authError}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl text-xs transition uppercase font-display"
+              >
+                Buka Monitor Konselor ⚡
+              </button>
+            </form>
+
+            <div class="text-center border-t border-slate-800 pt-4">
+              <button onClick={onBackToApp} class="text-xs text-slate-550 hover:text-slate-355 font-semibold">
+                Kembali ke Kereta Siswa 🚂
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div class="space-y-6 animate-fade-in">
+          {/* Header Banner */}
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-slate-900 p-6 border border-slate-800 rounded-3xl">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center font-extrabold font-mono text-lg">
+                BK
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h2 class="text-lg font-black text-white font-display">Monitoring Konseling Siswa Terpadu</h2>
+                  <span class="bg-rose-500/10 text-rose-400 text-[10px] font-mono px-2 py-0.5 rounded border border-rose-500/20 font-bold">
+                    PREVIEW MODE
+                  </span>
+                </div>
+                <p class="text-xs text-slate-450 mt-0.5">Memantau jurnal, mood, dan target rencana sasaran murid secara real-time.</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button 
+                onClick={handlePreseedMockData} 
+                class="bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 hover:bg-indigo-500/20 px-3.5 py-1.5 rounded-xl text-xs font-bold transition"
+              >
+                + Tambah Contoh Siswa
+              </button>
+              {students.length > 0 && (
+                <button onClick={handleClear} class="p-2 border border-slate-800 hover:border-red-500/20 hover:text-red-400 rounded-xl transition">
+                  <Icon name="trash-2" className="w-4 h-4" />
+                </button>
+              )}
+              <button onClick={onBackToApp} class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-xl text-xs transition">
+                Kembali 🚂
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* List */}
+            <div class="lg:col-span-7 bg-slate-905 bg-slate-900/60 border border-slate-800 p-5 rounded-2xl space-y-4">
+              <h3 class="text-xs uppercase tracking-wider font-mono font-bold text-slate-400 flex items-center gap-1.5">
+                <Icon name="file-spreadsheet" className="w-4 h-4 text-indigo-400" /> Daftar Siswa / Penumpang ({students.length})
+              </h3>
+
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                <div class="sm:col-span-8 relative">
+                  <input
+                    type="text"
+                    placeholder="Cari nama atau tiket siswa..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-3 pr-3 py-1.5 text-xs text-slate-100"
+                  />
+                </div>
+                <div class="sm:col-span-4 bg-slate-950 border border-slate-800 px-2 rounded-lg flex items-center">
+                  <select
+                    value={stationFilter}
+                    onChange={(e) => setStationFilter(e.target.value)}
+                    class="bg-transparent text-xs text-slate-300 w-full focus:outline-none cursor-pointer"
+                  >
+                    <option value="all">Semua Stasiun</option>
+                    <option value="1">Stasiun 1</option>
+                    <option value="2">Stasiun 2</option>
+                    <option value="3">Stasiun 3</option>
+                    <option value="4">Stasiun 4</option>
+                    <option value="5">Stasiun 5</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="space-y-2 max-h-96 overflow-y-auto pr-1">
+                {filtered.map((stud) => {
+                  const stampCount = Object.values(stud.stamps || {}).filter(Boolean).length;
+                  const isSelect = selectedStudent?.ticketId === stud.ticketId;
+                  return (
+                    <div
+                      key={stud.ticketId}
+                      onClick={() => setSelectedStudent(stud)}
+                      class={`p-4 border rounded-xl flex items-center justify-between gap-3 cursor-pointer transition ${
+                        isSelect ? 'bg-indigo-950/20 border-indigo-500/50' : 'bg-slate-950/60 border-slate-850 hover:border-slate-800'
+                      }`}
+                    >
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <span class="text-[10px] font-mono bg-slate-900 border border-slate-800 px-1.5 py-0.2 rounded text-amber-400">
+                            {stud.ticketId}
+                          </span>
+                          <h4 class="text-xs font-extrabold text-white">{stud.name}</h4>
+                        </div>
+                        <p class="text-[10px] text-slate-500 font-mono mt-1">
+                          Posisi: Stasiun {stud.currentStation}/5 • <span class="text-emerald-400 font-bold">{stampCount} Stempel</span>
+                        </p>
+                      </div>
+
+                      <button class="text-[10px] font-bold bg-slate-900 border border-slate-800 text-indigo-400 px-2.5 py-1 rounded hover:bg-slate-800">
+                        Evaluasi
+                      </button>
+                    </div>
+                  );
+                })}
+
+                {filtered.length === 0 && (
+                  <div class="text-center py-12 text-slate-500 text-xs italic">
+                    Belum ada siswa penjelajah. Tekan "+ Tambah Contoh Siswa" untuk demonstrasi data penuh!
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Inspect viewer */}
+            <div class="lg:col-span-5 bg-slate-900/60 border border-slate-800 p-5 rounded-2xl min-h-[400px]">
+              {selectedStudent ? (
+                <div class="space-y-4">
+                  <div class="border-b border-slate-800 pb-3">
+                    <span class="text-[9px] font-mono uppercase bg-amber-500/10 text-amber-400 px-2.5 py-0.5 rounded-full border border-amber-500/20 font-bold">
+                      {selectedStudent.ticketId}
+                    </span>
+                    <h3 class="text-sm font-extrabold text-white mt-1.5 font-display">{selectedStudent.name}</h3>
+                    <p class="text-[10px] text-indigo-400 font-mono">Posisi Lapangan: Kereta Stasiun {selectedStudent.currentStation}</p>
+                  </div>
+
+                  <div class="space-y-3 shrink-0">
+                    {/* S1 */}
+                    <div class="bg-slate-950/80 p-3 border border-slate-850 rounded-xl space-y-1">
+                      <h4 class="text-[10px] font-mono tracking-wider text-amber-400 font-bold uppercase">Stasiun 1: Minat Holland (RIASEC)</h4>
+                      {selectedStudent.station1?.interestResults ? (
+                        <p class="text-xs font-semibold text-slate-200">💎 Dominan: {selectedStudent.station1.interestResults.primary}</p>
+                      ) : (
+                        <p class="text-[10px] text-slate-600 italic">Belum dikerjakan oleh siswa.</p>
+                      )}
+                    </div>
+
+                    {/* S2 */}
+                    <div class="bg-slate-950/80 p-3 border border-slate-850 rounded-xl space-y-1">
+                      <h4 class="text-[10px] font-mono tracking-wider text-emerald-400 font-bold uppercase">Stasiun 2: Rona Emosi & Jurnal AI</h4>
+                      {selectedStudent.station2?.journalEntries?.length > 0 ? (
+                        <div class="space-y-1 font-sans text-[10px]">
+                          <p class="italic text-slate-400">"{selectedStudent.station2.journalEntries[0].content}"</p>
+                          {selectedStudent.station2.journalEntries[0].analysis && (
+                            <p class="text-indigo-400">Sentimen AI: <strong class="text-white">{selectedStudent.station2.journalEntries[0].analysis.sentiment}</strong></p>
+                          )}
+                        </div>
+                      ) : (
+                        <p class="text-[10px] text-slate-650 italic">Belum mengunggah log jurnal malam.</p>
+                      )}
+                    </div>
+
+                    {/* S3 */}
+                    <div class="bg-slate-950/80 p-3 border border-slate-850 rounded-xl space-y-1">
+                      <h4 class="text-[10px] font-mono tracking-wider text-sky-450 font-bold uppercase">Stasiun 3: Ikrar Rukun Damai</h4>
+                      {selectedStudent.station3?.pledgeSigned ? (
+                        <span class="text-[10px] text-emerald-400 font-mono font-semibold">✔ IKRAR TELAH DITANDA TANGANI</span>
+                      ) : (
+                        <span class="text-[10px] text-slate-650 italic">Belum menyerahkan tanda tangannya.</span>
+                      )}
+                    </div>
+
+                    {/* S5 */}
+                    <div class="bg-slate-950/80 p-3 border border-slate-850 rounded-xl space-y-1">
+                      <h4 class="text-[10px] font-mono tracking-wider text-pink-400 font-bold uppercase">Stasiun 5: Goals & Sasaran</h4>
+                      {selectedStudent.station5?.goals?.length > 0 ? (
+                        <div class="space-y-0.5 text-[10px]">
+                          {selectedStudent.station5.goals.map((g, i) => (
+                            <div key={i} class="text-slate-300">★ {g.text} ({g.completed ? 'Selesai' : 'Aktif'})</div>
+                          ))}
+                        </div>
+                      ) : (
+                        <span class="text-[10px] text-slate-655 italic">Belum melampirkan resolusi impian tahunan.</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div class="text-center py-20 text-slate-500 font-mono text-xs">
+                  *Pilih salah satu siswa di sebelah kiri untuk melihat evaluasi diagnostic BK mereka secara terperinci.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+
+    // ==========================================
+    // MAIN APP WRAPPER
+    // ==========================================
+    function App() {
+      const [progress, setProgress] = useState(null);
+      const [isGuruMode, setIsGuruMode] = useState(false);
+      const [currentTime, setCurrentTime] = useState('');
+
+      useEffect(() => {
+        // Hydrate
+        try {
+          const saved = localStorage.getItem('id_bk_exp_single');
+          if (saved) {
+            setProgress(JSON.parse(saved));
+          }
+        } catch (err) {}
+
+        // Set interval clock
+        const timer = setInterval(() => {
+          const now = new Date();
+          setCurrentTime(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WIB');
+        }, 1000);
+
+        return () => clearInterval(timer);
+      }, []);
+
+      const handleBoard = (name, ticketId) => {
+        const initial = {
+          name,
+          ticketId,
+          currentStation: 1,
+          stamps: { 1: false, 2: false, 3: false, 4: false, 5: false },
+          station1: { completedInterest: false, completedAptitude: false },
+          station2: { moodLogs: [], journalEntries: [] },
+          station3: { bullyingCompleted: false, pledgeSigned: false },
+          station4: { completedMajorTest: false },
+          station5: { goals: [], completedJourney: false }
+        };
+        setProgress(initial);
+        localStorage.setItem('id_bk_exp_single', JSON.stringify(initial));
+      };
+
+      const handleUpdateProgress = (updated) => {
+        setProgress(updated);
+        localStorage.setItem('id_bk_exp_single', JSON.stringify(updated));
+        
+        // Also update counselor pool if synced in browser memory
+        localStorage.setItem('kereta_bk_progress', JSON.stringify(updated));
+      };
+
+      const handleReset = () => {
+        if (confirm("Reset ulang tiket perjalanan BK siswa saat ini?")) {
+          setProgress(null);
+          localStorage.removeItem('id_bk_exp_single');
+          playClickTone();
+        }
+      };
+
+      const activeComponent = () => {
+        if (!progress) return null;
+        switch (progress.currentStation) {
+          case 1: return <StationOne progress={progress} onUpdate={handleUpdateProgress} />;
+          case 2: return <StationTwo progress={progress} onUpdate={handleUpdateProgress} />;
+          case 3: return <StationThree progress={progress} onUpdate={handleUpdateProgress} />;
+          case 4: return <StationFour progress={progress} onUpdate={handleUpdateProgress} />;
+          case 5: return <StationFive progress={progress} onUpdate={handleUpdateProgress} />;
+          default: return <StationOne progress={progress} onUpdate={handleUpdateProgress} />;
+        }
+      };
+
+      return (
+        <div class="flex flex-col min-h-screen">
+          {/* Navigation Bar Header */}
+          <header class="bg-slate-900 border-b border-slate-800 py-4 px-6 relative z-30 shadow-md">
+            <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+              <div class="flex items-center gap-2.5">
+                <div class="bg-amber-500/10 text-amber-400 p-2 rounded-xl border border-amber-500/20">
+                  <Icon name="train" className="w-5 h-5 text-amber-404" />
+                </div>
+                <div>
+                  <h1 class="text-sm font-bold tracking-tight text-white flex items-center gap-1.5 font-display">
+                    B-Express <span class="text-[9px] bg-indigo-500/20 text-indigo-400 px-1.5 py-0.2 rounded font-mono font-bold">ALL-IN-ONE</span>
+                  </h1>
+                  <p class="text-[10px] text-slate-500 font-sans tracking-wide">Bimbingan & Konseling Mandiri</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-1.5 text-[10px] font-mono text-slate-450 bg-slate-950 border border-slate-850 px-3 py-1.5 rounded-xl">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  {currentTime || '08:00:00 WIB'}
+                </div>
+
+                <button
+                  onClick={() => {
+                    playClickTone();
+                    setIsGuruMode(!isGuruMode);
+                  }}
+                  class="text-xs bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 px-3.5 py-1.5 rounded-xl font-bold transition flex items-center gap-1 font-display uppercase tracking-wider"
+                >
+                  <Icon name="layout-dashboard" className="w-3.5 h-3.5" />
+                  {isGuruMode ? 'Mode Kereta Siswa' : 'Dasbor Guru 📊'}
+                </button>
+
+                {progress && !isGuruMode && (
+                  <button
+                    onClick={handleReset}
+                    class="text-xs text-slate-500 hover:text-red-400 font-bold transition flex items-center gap-1"
+                  >
+                    Reset Tiket 🔄
+                  </button>
+                )}
+              </div>
+            </div>
+          </header>
+
+          {/* Main Area */}
+          <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8 relative z-20">
+            {isGuruMode ? (
+              <GuruDashboard onBackToApp={() => setIsGuruMode(false)} />
+            ) : !progress ? (
+              <div class="space-y-6">
+                <TicketBooth onBoard={handleBoard} />
+                <div class="text-center">
+                  <button
+                    onClick={() => {
+                      playClickTone();
+                      setIsGuruMode(true);
+                    }}
+                    class="bg-slate-900 hover:bg-slate-850 border border-slate-800 text-indigo-400 text-xs py-2 px-4 rounded-xl transition"
+                  >
+                    Masuk Sebagai Guru / Konselor Sekolah 🔑
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div class="space-y-6">
+                <TrainMap
+                  currentStation={progress.currentStation}
+                  stamps={progress.stamps}
+                  onSelectStation={(id) => {
+                    const fresh = { ...progress, currentStation: id };
+                    setProgress(fresh);
+                    localStorage.setItem('id_bk_exp_single', JSON.stringify(fresh));
+                  }}
+                  ticketId={progress.ticketId}
+                  userName={progress.name}
+                />
+                
+                <div class="bg-slate-900/40 border border-slate-800/60 backdrop-blur-sm p-2 rounded-2xl">
+                  {activeComponent()}
+                </div>
+              </div>
+            )}
+          </main>
+        </div>
+      );
+    }
+
+    // React DOM Render
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
